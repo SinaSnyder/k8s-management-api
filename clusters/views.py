@@ -50,7 +50,7 @@ class NamespaceListCreateAPIView(APIView):
             cluster = Cluster.objects.get(pk=cluster_id)
         except Exception as e:
             print("=== K8S EXCEPTION DETAILS ===", repr(e))
-            return Response({"error": f"جزئیات خطا: {repr(e)}"}, status=status.HTTP_502_BAD_GATEWAY)
+            return Response({"error": f"error details: {repr(e)}"}, status=status.HTTP_502_BAD_GATEWAY)
 
         if Namespace.objects.filter(cluster=cluster, name=ns_name).exists():
             return Response({"error": "this namesapce is already in database"}, status=status.HTTP_409_CONFLICT)
