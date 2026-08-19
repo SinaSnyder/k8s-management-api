@@ -1,0 +1,26 @@
+# Python / Virtual Environment
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+*.log
+local_settings.py
+
+# Environment variables & secrets
+.env
+
+# IDE / Editor settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Celery temporary files
+celerybeat-schedule
+celerybeat.pid
