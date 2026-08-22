@@ -71,7 +71,7 @@ A robust RESTful API built with Django REST Framework to interact dynamically wi
 ### 1. Prerequisites & Virtual Environment
 
 ```bash
-git clone https://github.com/your-username/k8s-management-api.git
+git clone https://github.com/SinaSnyder/k8s-management-api.git
 cd k8s-management-api
 
 python -m venv venv
