@@ -66,3 +66,16 @@ def cleanup_stale_backups():
     stale_backups.update(status='failed')
 
 
+@shared_task
+def create_scheduled_backup_job(app_id, source_path, schedule):
+    try:
+        app_obj = App.objects.get(pk=app_id)
+        backup = Backup.objects.create(
+            app=app_obj, 
+            source_path=source_path, 
+            schedule=schedule
+        )
+        execute_backup_task.delay(backup.id)
+        return f"Scheduled backup created: {backup.backup_id}"
+    except Exception as e:
+        return f"Failed to trigger scheduled backup: {str(e)}"
