@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'clusters',
     'rest_framework',
+    'django_celery_beat',
     'backup',
 ]
 
