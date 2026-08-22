@@ -4,6 +4,7 @@ from datetime import datetime
 from celery import shared_task
 from django.utils import timezone
 from .models import Backup
+from clusters.models import App
 from clusters.k8s_client import get_k8s_client
 from kubernetes.stream import stream
 
@@ -22,7 +23,7 @@ def execute_backup_task(self, backup_db_id):
         pods = k8s_api.list_namespaced_pod(namespace=namespace, label_selector=f"app={app.name}")
         
         if not pods.items:
-            raise Exception("no enable pod for this app")
+            raise Exception("No active pod found for this app.")
 
         pod_name = pods.items[0].metadata.name
 
@@ -63,7 +64,8 @@ def execute_backup_task(self, backup_db_id):
 def cleanup_stale_backups():
     threshold = timezone.now() - timezone.timedelta(hours=24)
     stale_backups = Backup.objects.filter(status='pending', created_at__lt=threshold)
-    stale_backups.update(status='failed')
+    updated_count = stale_backups.update(status='failed')
+    return f"Cleaned up {updated_count} stale backup(s)."
 
 
 @shared_task
@@ -76,6 +78,6 @@ def create_scheduled_backup_job(app_id, source_path, schedule):
             schedule=schedule
         )
         execute_backup_task.delay(backup.id)
-        return f"Scheduled backup created: {backup.backup_id}"
+        return f"Scheduled backup triggered: {backup.backup_id}"
     except Exception as e:
-        return f"Failed to trigger scheduled backup: {str(e)}"
+        raise Exception(f"Failed to trigger scheduled backup for app {app_id}: {str(e)}")
