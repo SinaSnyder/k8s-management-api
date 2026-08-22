@@ -24,3 +24,8 @@ local_settings.py
 # Celery temporary files
 celerybeat-schedule
 celerybeat.pid
+
+
+# Backup files and folders
+backups/
+*.tar.gz

@@ -7,6 +7,7 @@ from .models import Backup
 from clusters.models import App
 from clusters.k8s_client import get_k8s_client
 from kubernetes.stream import stream
+from django.conf import settings
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)
 def execute_backup_task(self, backup_db_id):
@@ -28,7 +29,7 @@ def execute_backup_task(self, backup_db_id):
         pod_name = pods.items[0].metadata.name
 
         today_str = datetime.now().strftime('%Y-%m-%d')
-        backup_dir = f"/backups/{app.id}/{today_str}"
+        backup_dir = os.path.join(settings.BASE_DIR, 'backups', str(app.id), today_str)
         os.makedirs(backup_dir, exist_ok=True)
         file_path = os.path.join(backup_dir, f"{backup.backup_id}.tar.gz")
 
