@@ -211,3 +211,67 @@ GET /backup?app_id=1
   }
 ]
 ```
+
+---
+
+## 📊 Observability & Metrics (VictoriaMetrics Pipeline)
+
+This project exposes custom and standard system metrics from the Django application and collects them using a light, operator-based VictoriaMetrics stack inside the Kubernetes cluster.
+
+### 1. Exposed Metrics (`/metrics`)
+The application uses Prometheus client middleware to expose observability data at `/metrics`. Key metrics include:
+- **`http_requests_total`**: Tracks incoming REST API request rates grouped by method, endpoint, and status code.
+- **`http_request_duration_seconds`**: Measures request latency to monitor API performance.
+- **`django_db_query_duration_seconds`**: Observes database query execution times.
+
+---
+
+### 2. Monitoring Pipeline Architecture
+
+```text
+[ Django App Pod ] --(Exposes /metrics)--> [ VMServiceScrape CRD ]
+                                                    │
+                                                    ▼
+                                          [ VictoriaMetrics Agent ]
+                                                    │
+                                                    ▼
+                                          [ VMSingle Storage ]
+                                                    │
+                                                    ▼
+                                          [ VMUI Visualizer ]
+3. Deployment & Setup (VictoriaMetrics Operator)
+Instead of full Helm charts for the whole stack, the setup is built natively using the VictoriaMetrics Operator and custom Kubernetes CRDs:
+
+Step 1: Install VictoriaMetrics Operator via Helm
+Bash
+helm repo add vm [https://victoriametrics.github.io/helm-charts/](https://victoriametrics.github.io/helm-charts/)
+helm repo update
+
+helm upgrade --install vm-operator vm/victoria-metrics-operator \
+  --namespace monitoring-system \
+  --create-namespace
+Step 2: Apply Custom Monitoring Resources (CRDs)
+Apply the manifests located in the k8s/monitoring/ directory:
+
+Bash
+kubectl apply -f k8s/monitoring/
+This sets up:
+
+VMSingle: Lightweight single-node metric storage instance.
+
+VMServiceScrape: Targets the django-app-service on port 8000 at path /metrics every 15s.
+
+VMAgent: Handles the metric scraping and forwards data to VMSingle.
+
+4. Metrics Visualization (VMUI)
+To visualize metrics via VictoriaMetrics' built-in UI (VMUI):
+
+Port-forward the VMSingle Service:
+
+Bash
+kubectl port-forward -n monitoring-system svc/vmsingle-vmsingle-instance 8428:8428
+Access VMUI:
+Open http://localhost:8428/vmui in your browser.
+
+Check Target Health:
+Navigate to http://localhost:8428/targets to verify that the django-app target status is UP.
