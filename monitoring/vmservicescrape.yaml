@@ -1,0 +1,16 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: django-app-scrape
+  namespace: monitoring-system
+spec:
+  selector:
+    matchLabels:
+      app: django-app
+  namespaceSelector:
+    matchNames:
+      - default
+  endpoints:
+  - port: http-metrics
+    path: /metrics
+    interval: 15s

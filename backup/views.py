@@ -48,9 +48,10 @@ class BackupListCreateAPIView(APIView):
                 )
                 return Response({"message": "periodic backup successfully set"}, status=status.HTTP_201_CREATED)
             except Exception as e:
-                return Response({"error": f"invalid corn format: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": f"invalid cron format: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
         backup = Backup.objects.create(app=app_obj, source_path=source_path)
+        
         execute_backup_task.delay(backup.id) 
 
         return Response({
@@ -68,3 +69,24 @@ class BackupDetailAPIView(APIView):
             "app_id": backup.app.id,
             "status": backup.status
         }, status=status.HTTP_200_OK)
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from metrics import BACKUPS_IN_PROGRESS, BACKUP_JOBS_TOTAL, BACKUP_DURATION_SECONDS
+import time
+
+class TestBackupMetricAPIView(APIView):
+    def get(self, request):
+        BACKUPS_IN_PROGRESS.inc()
+        
+        start_time = time.time()
+        
+        time.sleep(2)
+        
+        BACKUPS_IN_PROGRESS.dec()
+        
+        BACKUP_DURATION_SECONDS.observe(time.time() - start_time)
+        BACKUP_JOBS_TOTAL.labels(status='completed').inc()
+        
+        return Response({"status": "Test backup metric triggered successfully!"})

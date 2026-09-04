@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vm-agent-collector
+  namespace: monitoring-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vm-agent-collector
+  template:
+    metadata:
+      labels:
+        app: vm-agent-collector
+    spec:
+      containers:
+      - name: vmagent
+        image: victoriametrics/vmagent:v1.93.5
+        args:
+          - "-remoteWrite.url=http://vmsingle-vmsingle-instance:8428/api/v1/write"
+          - "-promscrape.config=/etc/vmagent/scrape.yml"
+        volumeMounts:
+        - name: config
+          mountPath: /etc/vmagent
+      volumes:
+      - name: config
+        configMap:
+          name: vmagent-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vmagent-config
+  namespace: monitoring-system
+data:
+  scrape.yml: |
+    global:
+      scrape_interval: 5s
+    scrape_configs:
+      - job_name: 'django-local-api'
+        metrics_path: '/metrics'
+        static_configs:
+          - targets: ['172.20.222.101:8000']

@@ -1,0 +1,11 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMSingle
+metadata:
+  name: vmsingle-instance
+  namespace: monitoring-system
+spec:
+  retentionPeriod: "1"
+  storage:
+    resources:
+      requests:
+        storage: 2Gi

@@ -29,3 +29,16 @@ celerybeat.pid
 # Backup files and folders
 backups/
 *.tar.gz
+
+
+# Kubernetes & Helm
+.kube/
+kubeconfig
+*.p12
+*.crt
+*.key
+charts/
+*.tgz
+
+# Monitoring temp files
+*.prom

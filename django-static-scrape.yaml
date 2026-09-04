@@ -1,0 +1,14 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMStaticScrape
+metadata:
+  name: django-local-static
+  namespace: monitoring-system
+  labels:
+    app.kubernetes.io/component: monitoring
+spec:
+  targetEndpoints:
+    - targets: ["172.20.222.101:8000"]
+      labels:
+        job: django-k8s-api
+      path: /metrics
+      interval: 5s

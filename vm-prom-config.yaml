@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vm-scrape-config
+  namespace: monitoring-system
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 5s
+    scrape_configs:
+      - job_name: 'django-local'
+        metrics_path: '/metrics'
+        static_configs:
+          - targets: ['172.20.222.101:8000']
