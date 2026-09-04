@@ -42,3 +42,16 @@ charts/
 
 # Monitoring temp files
 *.prom
+
+
+# Python / Django
+*.pyc
+__pycache__/
+db.sqlite3
+venv/
+.env
+
+# React / Node
+node_modules/
+dist/
+.DS_Store
