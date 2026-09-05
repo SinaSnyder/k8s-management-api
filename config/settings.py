@@ -25,7 +25,13 @@ SECRET_KEY = 'django-insecure-0v!x+q-*5@mrt0c4(^4)!&w@^xyy_!6c@k2_nh1&i!f43mq^hh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['172.20.222.101', 'localhost', '127.0.0.1', '*']
+ALLOWED_HOSTS = [
+    "api.rahimi.osdl.ir",
+    "rahimi.osdl.ir",
+    "localhost",
+    "127.0.0.1",
+    "k8s-backend-service",
+]
 
 # Application definition
 
@@ -38,10 +44,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'clusters',
+    'corsheaders',
     'rest_framework',
     'django_celery_beat',
     'backup',
-    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -140,3 +146,19 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://rahimi.osdl.ir",
+    "https://rahimi.osdl.ir",
+    "http://api.rahimi.osdl.ir",
+    "https://api.rahimi.osdl.ir",
+]
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://rahimi.osdl.ir",
+    "https://rahimi.osdl.ir",
+    "http://api.rahimi.osdl.ir",
+    "https://api.rahimi.osdl.ir",
+]
