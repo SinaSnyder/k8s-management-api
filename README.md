@@ -282,3 +282,79 @@ Open `http://localhost:8428/vmui` in your browser.
 
 **Check Target Health**:
 Navigate to `http://localhost:8428/targets` to verify that the django-app target status is UP.
+
+---
+
+# 🌐 Multi-Node Production Deployment & High-Availability Infrastructure
+
+The application is deployed in a multi-node Kubernetes (K3d) environment across physically separated public servers. It features an automated reverse-proxy routing pipeline with zero-downtime traffic forwarding.
+
+## ✨ Key Infrastructure Highlights
+
+- 🏢 **Dual-Node Distributed Architecture:** Spanning across dedicated Master (`37.32.26.255`) and Worker (`95.38.161.112`) nodes.
+- 🚦 **Traefik Ingress Controller Integration:** Native routing handling both Frontend and API domain ingress rules at NodePort `31969`.
+- 🔗 **Persistent Auto-Healing Tunnels:** Uses background `autossh` processes to bridge public node traffic directly into internal K3d container bridge networks (`172.23.0.2`).
+- ⚡ **Low-Latency Kernel Traffic Routing:** Leverages Linux `iptables` with `DNAT` and `MASQUERADE` rules on both nodes to route standard HTTP/HTTPS (`80`/`443`) ports seamlessly without high-privilege container bindings.
+- 🔄 **Dynamic Image Pull Enforcement:** Configured with `imagePullPolicy: Always` and patched deployment triggers to allow live updates bypassing local Docker layer caches.
+
+## 🔗 Live Production Endpoints
+
+| Component | Domain | Target Service |
+| :--- | :--- | :--- |
+| **Frontend Dashboard** | [http://rahimi.osdl.ir](http://rahimi.osdl.ir) | `k8s-frontend-service:80` |
+| **Backend REST API** | [http://api.rahimi.osdl.ir](http://api.rahimi.osdl.ir) | `k8s-backend-service:8000` |
+
+## 🛠️ Deployment & Maintenance Commands
+
+### 1. Apply Kubernetes Resources
+
+Apply all manifests including Deployments, Services, and Ingress:
+
+```bash
+kubectl apply -f k8s/
+```
+
+### 2. Reverse Proxy & IPTables Setup (Per Node)
+
+Forward public ports to the internal SSH tunnel entrypoint (`8080`):
+
+```bash
+sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 127.0.0.1:8080
+sudo iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to-destination 127.0.0.1:8080
+```
+
+### 3. Initiate Persistent Tunneling (`sinavm`)
+
+Connect the K3d internal Ingress to public nodes:
+
+```bash
+autossh -M 0 -f -N -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3" -R 8080:172.23.0.2:31969 ubuntu@37.32.26.255
+autossh -M 0 -f -N -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3" -R 8080:172.23.0.2:31969 ubuntu@95.38.161.112
+```
+
+### 4. Force Instant Deployment Rollout
+
+Trigger zero-downtime updates without altering tag versions:
+
+```bash
+kubectl patch deployment k8s-frontend --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/imagePullPolicy", "value": "Always"}]'
+kubectl rollout restart deployment/k8s-frontend deployment/k8s-backend
+```
+
+---
+
+🖼️ Application Screenshots & UI Showcase
+
+<details open>
+  <summary><b>📱 Main Dashboard & UI Features</b></summary>
+  <br>
+
+  | Cluster Management | Backup Configurations |
+  | :---: | :---: |
+  | <img src="https://github.com/user-attachments/assets/4215be91-b102-4310-8390-2e2a613c0657" width="100%"/> | <img src="https://github.com/user-attachments/assets/721a988f-993a-4457-b489-d99ce5a28721" width="100%"/> |
+  | <img src="https://github.com/user-attachments/assets/282942fd-9fae-4c7f-acf0-727c6d1b96d6" width="100%"/> | <img src="https://github.com/user-attachments/assets/8d4125c2-8cfb-423d-90f1-bf27929987ea" width="100%"/> |
+  | <img src="https://github.com/user-attachments/assets/93347d8c-545c-43ee-bef0-fd298e03f14b" width="100%"/> | <img src="https://github.com/user-attachments/assets/e8801447-8b80-4693-8193-e164e8494ca2" width="100%"/> |
+
+</details>
+
+
