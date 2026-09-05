@@ -349,11 +349,14 @@ kubectl rollout restart deployment/k8s-frontend deployment/k8s-backend
   <summary><b>📱 Main Dashboard & UI Features</b></summary>
   <br>
 
-  | Cluster Management | Backup Configurations |
-  | :---: | :---: |
-  | <img src="https://github.com/user-attachments/assets/4215be91-b102-4310-8390-2e2a613c0657" width="100%"/> | <img src="https://github.com/user-attachments/assets/721a988f-993a-4457-b489-d99ce5a28721" width="100%"/> |
-  | <img src="https://github.com/user-attachments/assets/282942fd-9fae-4c7f-acf0-727c6d1b96d6" width="100%"/> | <img src="https://github.com/user-attachments/assets/8d4125c2-8cfb-423d-90f1-bf27929987ea" width="100%"/> |
-  | <img src="https://github.com/user-attachments/assets/93347d8c-545c-43ee-bef0-fd298e03f14b" width="100%"/> | <img src="https://github.com/user-attachments/assets/e8801447-8b80-4693-8193-e164e8494ca2" width="100%"/> |
+  | Cluster Management |
+  | :---: |
+  | <img src="https://github.com/user-attachments/assets/4215be91-b102-4310-8390-2e2a613c0657" width="100%"/> |
+  | <img src="https://github.com/user-attachments/assets/721a988f-993a-4457-b489-d99ce5a28721" width="100%"/> |
+  | <img src="https://github.com/user-attachments/assets/282942fd-9fae-4c7f-acf0-727c6d1b96d6" width="100%"/> |
+  | <img src="https://github.com/user-attachments/assets/8d4125c2-8cfb-423d-90f1-bf27929987ea" width="100%"/> |
+  | <img src="https://github.com/user-attachments/assets/93347d8c-545c-43ee-bef0-fd298e03f14b" width="100%"/> |
+  | <img src="https://github.com/user-attachments/assets/e8801447-8b80-4693-8193-e164e8494ca2" width="100%"/> |
 
 </details>
 
